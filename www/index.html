@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0,user-scalable=no">
+
+<title>Tower Detective</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:#07111f;
+  color:#fff;
+}
+
+.app{
+  max-width:600px;
+  margin:auto;
+  min-height:100vh;
+  padding-bottom:25px;
+}
+
+header{
+  padding:24px 20px 15px;
+  background:linear-gradient(135deg,#0d47a1,#1565c0);
+  border-radius:0 0 25px 25px;
+}
+
+header h1{
+  font-size:27px;
+}
+
+header p{
+  opacity:.8;
+  margin-top:6px;
+}
+
+.status{
+  margin:15px;
+  padding:18px;
+  background:#101d30;
+  border-radius:18px;
+  border:1px solid #203550;
+}
+
+.status-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.dot{
+  width:11px;
+  height:11px;
+  background:#22c55e;
+  border-radius:50%;
+  display:inline-block;
+  margin-right:7px;
+}
+
+.card{
+  margin:15px;
+  padding:18px;
+  background:#101d30;
+  border:1px solid #203550;
+  border-radius:20px;
+}
+
+.card h2{
+  font-size:18px;
+  margin-bottom:15px;
+}
+
+.info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.info div{
+  background:#17283e;
+  padding:13px;
+  border-radius:13px;
+}
+
+.label{
+  font-size:12px;
+  color:#9fb1c8;
+}
+
+.value{
+  margin-top:5px;
+  font-size:16px;
+  font-weight:bold;
+}
+
+button{
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:14px;
+  background:#1976d2;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  margin-top:12px;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+.tower{
+  background:#17283e;
+  border-radius:15px;
+  padding:15px;
+  margin-top:10px;
+}
+
+.tower strong{
+  font-size:16px;
+}
+
+.signal{
+  margin-top:8px;
+  height:8px;
+  background:#263b54;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.signal span{
+  display:block;
+  height:100%;
+  width:72%;
+  background:#22c55e;
+}
+
+#map{
+  height:260px;
+  background:
+    linear-gradient(45deg,#17283e 25%,transparent 25%),
+    linear-gradient(-45deg,#17283e 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#17283e 75%),
+    linear-gradient(-45deg,transparent 75%,#17283e 75%);
+  background-size:40px 40px;
+  background-position:0 0,0 20px,20px -20px,-20px 0;
+  border-radius:15px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#9fb1c8;
+  text-align:center;
+}
+
+footer{
+  text-align:center;
+  color:#70859d;
+  font-size:12px;
+  padding:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+  <h1>📡 Tower Detective</h1>
+  <p>Mobile network information & location</p>
+</header>
+
+<div class="status">
+  <div class="status-title">
+    <div>
+      <span class="dot"></span>
+      <strong>Location Status</strong>
+    </div>
+    <span id="locationStatus">Waiting</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📍 Your Location</h2>
+
+  <div class="info">
+    <div>
+      <div class="label">Latitude</div>
+      <div class="value" id="lat">--</div>
+    </div>
+
+    <div>
+      <div class="label">Longitude</div>
+      <div class="value" id="lon">--</div>
+    </div>
+
+    <div>
+      <div class="label">Accuracy</div>
+      <div class="value" id="accuracy">--</div>
+    </div>
+
+    <div>
+      <div class="label">Altitude</div>
+      <div class="value" id="altitude">--</div>
+    </div>
+  </div>
+
+  <button onclick="getLocation()">📍 Detect Location</button>
+</div>
+
+<div class="card">
+  <h2>📶 Network Information</h2>
+
+  <div class="info">
+    <div>
+      <div class="label">Connection</div>
+      <div class="value" id="connection">--</div>
+    </div>
+
+    <div>
+      <div class="label">Online</div>
+      <div class="value" id="online">--</div>
+    </div>
+  </div>
+
+  <button onclick="refreshNetwork()">🔄 Refresh Network</button>
+</div>
+
+<div class="card">
+  <h2>🗼 Nearby Tower Scanner</h2>
+
+  <div class="tower">
+    <strong>Detected Network Area</strong>
+    <p id="towerText">
+      Start location detection to identify your area.
+    </p>
+
+    <div class="signal">
+      <span></span>
+    </div>
+  </div>
+
+  <button onclick="scanTowers()">🔎 Scan</button>
+</div>
+
+<div class="card">
+  <h2>🗺️ Location Map</h2>
+
+  <div id="map">
+    Location will appear here after GPS detection.
+  </div>
+</div>
+
+<footer>
+  Tower Detective • Uses information available through your device.
+</footer>
+
+</div>
+
+<script>
+
+function getLocation(){
+
+  const status =
+    document.getElementById("locationStatus");
+
+  if(!navigator.geolocation){
+    status.innerText="Not supported";
+    return;
+  }
+
+  status.innerText="Detecting...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position){
+
+      const c=position.coords;
+
+      document.getElementById("lat").innerText =
+        c.latitude.toFixed(6);
+
+      document.getElementById("lon").innerText =
+        c.longitude.toFixed(6);
+
+      document.getElementById("accuracy").innerText =
+        Math.round(c.accuracy)+" m";
+
+      document.getElementById("altitude").innerText =
+        c.altitude ?
+        Math.round(c.altitude)+" m" :
+        "Unavailable";
+
+      status.innerText="Detected";
+
+      document.getElementById("map").innerHTML =
+        "📍<br>GPS Location Detected<br><br>"+
+        c.latitude.toFixed(5)+", "+
+        c.longitude.toFixed(5);
+
+      document.getElementById("towerText").innerText =
+        "GPS position acquired. Native Android tower APIs can be connected here for supported cellular information.";
+
+    },
+
+    function(error){
+
+      status.innerText="Permission denied";
+
+      alert(
+        "Location permission is required. "+
+        "Please allow location access and try again."
+      );
+
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:5000
+    }
+  );
+}
+
+
+function refreshNetwork(){
+
+  const online =
+    navigator.onLine;
+
+  document.getElementById("online").innerText =
+    online ? "Online" : "Offline";
+
+  const connection =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
+
+  document.getElementById("connection").innerText =
+    connection ?
+    (connection.effectiveType || "Available") :
+    "Android network API";
+}
+
+
+function scanTowers(){
+
+  refreshNetwork();
+
+  if(!navigator.geolocation){
+
+    alert("GPS is not available.");
+
+    return;
+  }
+
+  getLocation();
+
+  setTimeout(function(){
+
+    document.getElementById("towerText").innerText =
+      "Scan completed. Exact cellular tower identifiers require supported Android native APIs and permissions.";
+
+  },1000);
+}
+
+
+window.addEventListener(
+  "online",
+  refreshNetwork
+);
+
+window.addEventListener(
+  "offline",
+  refreshNetwork
+);
+
+refreshNetwork();
+
+</script>
+
+</body>
+</html>
