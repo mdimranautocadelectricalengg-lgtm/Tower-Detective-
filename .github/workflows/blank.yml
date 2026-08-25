@@ -1,4 +1,4 @@
-name: Build Tower Detective APK
+name: Build Tower Detective
 
 on:
   workflow_dispatch:
@@ -11,10 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -28,9 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Add Android
-        run: npx cap add android
-
       - name: Sync Capacitor
         run: npx cap sync android
 
@@ -38,22 +36,27 @@ jobs:
         working-directory: android
         run: chmod +x gradlew
 
-      - name: Build signed Debug APK
+      - name: Build Debug APK
         working-directory: android
         run: ./gradlew assembleDebug
 
-      - name: Build AAB
+      - name: Build Release AAB
         working-directory: android
         run: ./gradlew bundleRelease
 
-      - name: Show APK
-        run: find android/app/build/outputs -type f \( -name "*.apk" -o -name "*.aab" \)
+      - name: Show generated files
+        run: |
+          echo "========== APK =========="
+          find android/app/build/outputs/apk -type f -name "*.apk" -print
+
+          echo "========== AAB =========="
+          find android/app/build/outputs/bundle -type f -name "*.aab" -print
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Tower-Detective-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
       - name: Upload AAB
