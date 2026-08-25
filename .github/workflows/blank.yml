@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -29,6 +28,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Prepare Android platform
+        run: |
+          if [ ! -f android/settings.gradle ] && [ ! -f android/settings.gradle.kts ]; then
+            rm -rf android
+            npx cap add android
+          fi
+
       - name: Sync Capacitor
         run: npx cap sync android
 
@@ -39,25 +45,24 @@ jobs:
 
       - name: Check Android project
         run: |
-          echo "===== Android project ====="
+          echo "===== Android files ====="
           ls -la android
-          echo "===== Android app ====="
-          ls -la android/app
+          echo "===== Gradle files ====="
+          find android -maxdepth 2 -type f \
+            \( -name "settings.gradle*" -o -name "build.gradle*" \) -print
 
       - name: Build Debug APK
-        run: |
-          gradle -p android assembleDebug
+        run: gradle -p android assembleDebug
 
       - name: Build Release AAB
-        run: |
-          gradle -p android bundleRelease
+        run: gradle -p android bundleRelease
 
       - name: Show generated files
         run: |
-          echo "===== APK FILES ====="
+          echo "===== APK ====="
           find android/app/build/outputs/apk -type f -name "*.apk" -print
 
-          echo "===== AAB FILES ====="
+          echo "===== AAB ====="
           find android/app/build/outputs/bundle -type f -name "*.aab" -print
 
       - name: Upload APK
