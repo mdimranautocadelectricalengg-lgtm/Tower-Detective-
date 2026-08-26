@@ -1,0 +1,87 @@
+name: Build Tower Detective
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check Capacitor
+        run: npx cap --version
+
+      - name: Create Android project if missing
+        run: |
+          if [ ! -f android/settings.gradle ] && [ ! -f android/settings.gradle.kts ]; then
+            echo "Android Capacitor project missing."
+            rm -rf android
+            npx cap add android
+          else
+            echo "Android Capacitor project already exists."
+          fi
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Check Android project
+        run: |
+          echo "===== Android directory ====="
+          ls -la android
+
+          echo "===== Required files ====="
+          test -f android/settings.gradle || test -f android/settings.gradle.kts
+          test -f android/gradlew
+
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: Build Release AAB
+        working-directory: android
+        run: ./gradlew bundleRelease
+
+      - name: Show generated files
+        run: |
+          echo "===== APK ====="
+          find android/app/build/outputs/apk -type f -name "*.apk" -print
+
+          echo "===== AAB ====="
+          find android/app/build/outputs/bundle -type f -name "*.aab" -print
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tower-Detective-APK
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tower-Detective-AAB
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
