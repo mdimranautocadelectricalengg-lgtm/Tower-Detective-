@@ -1,0 +1,80 @@
+name: Build Tower Detective
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+
+        with:
+          node-version: 20
+
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+
+        with:
+          distribution: temurin
+          java-version: 21
+
+
+      - name: Install dependencies
+        run: npm install
+
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+
+      - name: Build Release AAB
+        run: |
+          cd android
+          ./gradlew bundleRelease
+
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+
+        with:
+          name: Tower-Detective-APK
+
+          path:
+            android/app/build/outputs/apk/debug/*.apk
+
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+
+        with:
+          name: Tower-Detective-AAB
+
+          path:
+            android/app/build/outputs/bundle/release/*.aab
