@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,
+                 initial-scale=1.0,
+                 maximum-scale=1.0,
+                 user-scalable=no">
+
+    <title>Tower Detective</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <header>
+        <div class="antenna">📡</div>
+
+        <h1>Tower Detective</h1>
+
+        <p>
+            Real Android Cellular & GPS Monitor
+        </p>
+    </header>
+
+
+    <!-- STATUS -->
+
+    <section class="card">
+
+        <div class="status">
+
+            <span id="statusDot"
+                  class="dot"></span>
+
+            <span id="status">
+                Ready
+            </span>
+
+        </div>
+
+
+        <div class="grid">
+
+            <div class="item">
+                <span class="label">
+                    Network
+                </span>
+
+                <strong id="network">
+                    --
+                </strong>
+            </div>
+
+
+            <div class="item">
+                <span class="label">
+                    Operator
+                </span>
+
+                <strong id="operator">
+                    --
+                </strong>
+            </div>
+
+        </div>
+
+
+        <button id="startButton">
+            ▶ Start Live Scanner
+        </button>
+
+
+        <button id="stopButton"
+                class="stop">
+            ■ Stop Scanner
+        </button>
+
+    </section>
+
+
+    <!-- GPS -->
+
+    <section class="card">
+
+        <h2>📍 GPS</h2>
+
+        <div class="grid">
+
+            <div class="item">
+                <span class="label">
+                    Latitude
+                </span>
+
+                <strong id="latitude">
+                    --
+                </strong>
+            </div>
+
+
+            <div class="item">
+                <span class="label">
+                    Longitude
+                </span>
+
+                <strong id="longitude">
+                    --
+                </strong>
+            </div>
+
+
+            <div class="item">
+                <span class="label">
+                    Accuracy
+                </span>
+
+                <strong id="accuracy">
+                    --
+                </strong>
+            </div>
+
+
+            <div class="item">
+                <span class="label">
+                    Altitude
+                </span>
+
+                <strong id="altitude">
+                    --
+                </strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SERVING CELL -->
+
+    <section class="card">
+
+        <h2>🗼 Serving Cell</h2>
+
+        <div id="servingCell">
+
+            <p class="small">
+                Start scanner to read the
+                serving cell.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- NEIGHBOR CELLS -->
+
+    <section class="card">
+
+        <h2>📶 Detected Cells</h2>
+
+        <div id="cells">
+
+            <p class="small">
+                No cellular data yet.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- AI -->
+
+    <section class="card">
+
+        <h2>🤖 Tower Detective AI</h2>
+
+        <p id="aiResult"
+           class="small">
+
+            AI analysis will appear here
+            after the live scanner collects
+            device data.
+
+        </p>
+
+        <button id="analyzeButton">
+            🧠 Analyze Current Network
+        </button>
+
+    </section>
+
+
+    <!-- MAP PLACEHOLDER -->
+
+    <section class="card">
+
+        <h2>🗺️ Current Position</h2>
+
+        <div id="map"
+             class="map">
+
+            Waiting for GPS...
+
+        </div>
+
+    </section>
+
+
+    <footer>
+
+        Tower Detective<br>
+
+        Real Android device information
+
+    </footer>
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
