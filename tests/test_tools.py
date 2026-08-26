@@ -7,10 +7,8 @@ from ai.tools import (
 
 def test_signal():
 
-    assert (
-        signal_interpretation(-70)
-        == "Generally strong"
-    )
+    assert signal_interpretation(-70) == \
+        "Generally strong"
 
 
 def test_serving_cell():
@@ -26,10 +24,9 @@ def test_serving_cell():
         }
     ]
 
-
-    result =
-        find_serving_cell(cells)
-
+    result = find_serving_cell(
+        cells
+    )
 
     assert result["cellId"] == 456
 
@@ -40,16 +37,13 @@ def test_cell_change():
         "cellId": 100
     }
 
-
     current = {
         "cellId": 200
     }
-
 
     result = compare_cells(
         previous,
         current
     )
-
 
     assert result["changed"] is True
